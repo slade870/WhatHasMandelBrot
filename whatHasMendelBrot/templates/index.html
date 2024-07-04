@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mandelbrot Set Generator</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Mandelbrot Set Generator</h1>
+      <div class="input-field">
+        <label for="xmin">X Min:</label>
+        <input type="number" id="xmin" value="-3.0" />
+      </div>
+      <div class="input-field">
+        <label for="xmax">X Max:</label>
+        <input type="number" id="xmax" value="8.0" />
+      </div>
+      <div class="input-field">
+        <label for="ymin">Y Min:</label>
+        <input type="number" id="ymin" value="-7.5" />
+      </div>
+      <div class="input-field">
+        <label for="ymax">Y Max:</label>
+        <input type="number" id="ymax" value="5.5" />
+      </div>
+      <div class="input-field">
+        <label for="width">Width:</label>
+        <input type="number" id="width" value="800" />
+      </div>
+      <div class="input-field">
+        <label for="height">Height:</label>
+        <input type="number" id="height" value="800" />
+      </div>
+      <div class="input-field">
+        <label for="max_iter">Max Iterations:</label>
+        <input type="number" id="max_iter" value="256" />
+      </div>
+      <button class="btn" onclick="generateMandelbrot()">Generate</button>
+      <button class="btn" onclick="resetFields()">Reset</button>
+      <div id="mandelbrot-image"></div>
+    </div>
+    <script>
+      function generateMandelbrot() {
+        const xmin = document.getElementById("xmin").value;
+        const xmax = document.getElementById("xmax").value;
+        const ymin = document.getElementById("ymin").value;
+        const ymax = document.getElementById("ymax").value;
+        const width = document.getElementById("width").value;
+        const height = document.getElementById("height").value;
+        const max_iter = document.getElementById("max_iter").value;
+
+        fetch("/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            xmin,
+            xmax,
+            ymin,
+            ymax,
+            width,
+            height,
+            max_iter,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const img = document.createElement("img");
+            img.src = "data:image/png;base64," + data.image;
+            document.getElementById("mandelbrot-image").innerHTML = "";
+            document.getElementById("mandelbrot-image").appendChild(img);
+          });
+      }
+
+      function resetFields() {
+        document.getElementById("xmin").value = "-3.0";
+        document.getElementById("xmax").value = "8.0";
+        document.getElementById("ymin").value = "-7.5";
+        document.getElementById("ymax").value = "5.5";
+        document.getElementById("width").value = "800";
+        document.getElementById("height").value = "800";
+        document.getElementById("max_iter").value = "256";
+        document.getElementById("mandelbrot-image").innerHTML = "";
+      }
+    </script>
+  </body>
+</html>
